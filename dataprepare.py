@@ -5,7 +5,6 @@ from os import listdir
 from os import path
 from os import makedirs
 from os.path import isfile, join
-from shutil import copyfile
 import sys
 import csv
 
@@ -13,7 +12,7 @@ def readHerbList():
     herblist = []
     rows = csv.reader(open("./herblist.csv", "rb"))
     for row in rows:
-        herblist.append(row[0].strip())
+        herblist.append(row[1].strip())
     return herblist
 
 def readSymptoms():
@@ -73,12 +72,18 @@ def main():
 
     if len(sys.argv) != 1:
         filedir = sys.argv[1]
+        print "\nProcessing : ", filedir
 
         # create path to write output file
         upone_level = path.dirname(filedir.rstrip('/'))
         uptwo_level = path.dirname(upone_level.rstrip('/'))
-        dest_path = uptwo_level+"/"+symptom+".csv"
+        destination_dir = uptwo_level+"/001.vector"
 
+        # Create directory for store result file
+        if not path.exists(destination_dir):
+            makedirs(destination_dir)
+
+        dest_path = destination_dir+"/"+symptom+".csv"
         if isfile(dest_path):
             outfile = open(dest_path, 'a')
         else:
