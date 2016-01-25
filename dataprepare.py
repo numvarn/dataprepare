@@ -25,8 +25,9 @@ def readSymptoms():
 def createVector(filepath, filename, herblist, symptom, symptomID):
     rowsize = len(herblist) + 3
     row = [0]*rowsize
-    row[0] = filename
-    row[1] = "symp"+str(symptomID)
+    fname, fext = filename.split(".")
+    row[0] = "FID-"+fname
+    row[1] = "SYMPID-"+str(symptomID)
 
     flagSymp = False
     flagHerb = False
@@ -65,14 +66,15 @@ def createVector(filepath, filename, herblist, symptom, symptomID):
         return []
 
 def main():
-    herblist = readHerbList()
-    symptoms = readSymptoms()
-    symptomID = 230
-    symptom = symptoms[symptomID]
+    if len(sys.argv) == 3:
+        herblist = readHerbList()
+        symptoms = readSymptoms()
 
-    if len(sys.argv) != 1:
         filedir = sys.argv[1]
-        print "\nProcessing : ", filedir
+        symptomID = int(sys.argv[2])
+        symptom = symptoms[symptomID]
+
+        print "\nProcessing : ", filedir, " : ", symptom
 
         # create path to write output file
         upone_level = path.dirname(filedir.rstrip('/'))
@@ -83,7 +85,7 @@ def main():
         if not path.exists(destination_dir):
             makedirs(destination_dir)
 
-        dest_path = destination_dir+"/"+symptom+".csv"
+        dest_path = destination_dir+"/"+str(symptomID)+".csv"
         if isfile(dest_path):
             outfile = open(dest_path, 'a')
         else:
