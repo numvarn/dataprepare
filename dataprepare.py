@@ -65,59 +65,66 @@ def createVector(filepath, filename, herblist, symptom, symptomID):
     else:
         return []
 
-def main():
-    if len(sys.argv) == 3:
+def main(rootDir, dirname, symid, herblist, symptoms):
+    filedir = rootDir+"/"+dirname+"/filtered"
+    symptomID = int(symid)
+    symptom = symptoms[symptomID]
+
+    print "\nProcessing : ", filedir, " : ", symptom
+
+    # create path to write output file
+    destination_dir = rootDir+"/001.vector"
+
+    # Create directory for store result file
+    if not path.exists(destination_dir):
+        makedirs(destination_dir)
+
+    dest_path = destination_dir+"/"+str(symptomID)+".csv"
+    if isfile(dest_path):
+        outfile = open(dest_path, 'a')
+    else:
+        outfile = open(dest_path, 'w')
+        # create CSV Header
+        header = ["filename", "symptom"]
+        index = 0
+        for herb in herblist:
+            head = 'h'+str(index)
+            header.append(head)
+            index += 1
+        header.append("founded")
+
+        newline = []
+        newline = ",".join(header)+"\n"
+        newline = newline.encode('utf-8')
+        outfile.write(newline)
+
+    # List all file from target directory
+    onlyfiles = [f for f in listdir(filedir) if isfile(join(filedir, f))]
+    for filename in onlyfiles:
+        row = []
+        row = createVector(filedir, filename, herblist, symptom, symptomID)
+        if len(row) > 0:
+            newline = []
+            newline = ",".join(row)+"\n"
+            outfile.write(newline)
+
+    outfile.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        # Get root path from command line argument
+        rootDir = sys.argv[1]
+
+        # Read CSV
         herblist = readHerbList()
         symptoms = readSymptoms()
 
-        filedir = sys.argv[1]
-        symptomID = int(sys.argv[2])
-        symptom = symptoms[symptomID]
-
-        print "\nProcessing : ", filedir, " : ", symptom
-
-        # create path to write output file
-        upone_level = path.dirname(filedir.rstrip('/'))
-        uptwo_level = path.dirname(upone_level.rstrip('/'))
-        destination_dir = uptwo_level+"/001.vector"
-
-        # Create directory for store result file
-        if not path.exists(destination_dir):
-            makedirs(destination_dir)
-
-        dest_path = destination_dir+"/"+str(symptomID)+".csv"
-        if isfile(dest_path):
-            outfile = open(dest_path, 'a')
-        else:
-            outfile = open(dest_path, 'w')
-            # create CSV Header
-            header = ["filename", "symptom"]
-            index = 0
-            for herb in herblist:
-                head = 'h'+str(index)
-                header.append(head)
-                index += 1
-            header.append("founded")
-
-            newline = []
-            newline = ",".join(header)+"\n"
-            newline = newline.encode('utf-8')
-            outfile.write(newline)
-
-
-        # List all file from target directory
-        onlyfiles = [f for f in listdir(filedir) if isfile(join(filedir, f))]
-        for filename in onlyfiles:
-            row = []
-            row = createVector(filedir, filename, herblist, symptom, symptomID)
-            if len(row) > 0:
-                newline = []
-                newline = ",".join(row)+"\n"
-                outfile.write(newline)
-
-        outfile.close()
+        symid = 0
+        for symp in symptoms:
+            onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
+            for dirname in onlyDir:
+                if dirname != "001.vector":
+                    main(rootDir, dirname, symid, herblist, symptoms)
+            symid += 1
     else:
         print "Please, Enter File Directory"
-
-if __name__ == '__main__':
-    main()

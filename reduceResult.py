@@ -45,7 +45,7 @@ def reduceResult(resultFile, symptomsID):
 
 def main():
     if len(sys.argv) == 3:
-        resultFile = sys.argv[1]
+        resultFile = sys.argv[1]+"/"+sys.argv[2]+".csv"
         symptomsID = sys.argv[2]
         reduceResult(resultFile, symptomsID)
     else:
