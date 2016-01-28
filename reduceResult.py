@@ -34,7 +34,7 @@ def reduceResult(resultFile, symptomsID):
         newrow.append(row[1])
 
         for index in xrange(2, len(herblist)-1):
-            if herblist[index - 2] != 0:
+            if herblist[index - 2] >= (0.2 * rowNumber):
                 newrow.append(row[index])
         newrow.append(row[len(row)-1])
         newline = ",".join(newrow)+"\n"
