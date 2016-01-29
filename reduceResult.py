@@ -9,6 +9,7 @@ import sys
 import csv
 
 def reduceResult(resultFile, symptomsID):
+    print "Processing : ", resultFile
     rows = csv.reader(open(resultFile, "rb"))
     rowNumber = 0
     herblist = []
@@ -23,11 +24,19 @@ def reduceResult(resultFile, symptomsID):
         rowNumber += 1
 
     # write new csv file
-    inputPath = path.dirname(resultFile.rstrip('/'))
-    destPath = inputPath+"/"+symptomsID+"-filtered.csv"
+    destRootPath = path.dirname(resultFile.rstrip('/'))
+    destRootPath = path.dirname(destRootPath.rstrip('/'))
+    destRootPath = destRootPath+"/002.filtered"
+
+    # Create directory for store result file
+    if not path.exists(destRootPath):
+        makedirs(destRootPath)
+
+    destPath = destRootPath+"/"+symptomsID+"-filtered.csv"
     outfile = open(destPath, 'w')
 
     rows = csv.reader(open(resultFile, "rb"))
+    rowCount = 0
     for row in rows:
         newrow = []
         newrow.append(row[0])
@@ -37,17 +46,30 @@ def reduceResult(resultFile, symptomsID):
             if herblist[index - 2] >= (0.2 * rowNumber):
                 newrow.append(row[index])
         newrow.append(row[len(row)-1])
-        newline = ",".join(newrow)+"\n"
-        newline = newline.encode('utf-8')
-        outfile.write(newline)
+
+        # check total frequentcy in each row
+        rowSumation = 0
+        if rowCount > 0:
+            for index in xrange(2, len(newrow)- 2):
+                rowSumation += int(newrow[index])
+
+        if rowSumation != 0 or rowCount == 0:
+            newline = ",".join(newrow)+"\n"
+            newline = newline.encode('utf-8')
+            outfile.write(newline)
+
+        rowCount += 1
 
     outfile.close()
 
 def main():
-    if len(sys.argv) == 3:
-        resultFile = sys.argv[1]+"/"+sys.argv[2]+".csv"
-        symptomsID = sys.argv[2]
-        reduceResult(resultFile, symptomsID)
+    if len(sys.argv) == 2:
+        rootPath = sys.argv[1]
+        onlyfiles = [f for f in listdir(rootPath) if isfile(join(rootPath, f))]
+        for resultFile in onlyfiles:
+            symptomsID, ext = resultFile.split(".")
+            if ext == "csv":
+                reduceResult(rootPath+"/"+resultFile, symptomsID)
     else:
         print "Please, Enter File Directory"
 
