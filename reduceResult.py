@@ -40,17 +40,17 @@ def reduceResult(resultFile, symptomsID):
     for row in rows:
         newrow = []
         newrow.append(row[0])
-        newrow.append(row[1])
+        # newrow.append(row[1])
 
         for index in xrange(2, len(herblist)-1):
             if herblist[index - 2] >= (0.2 * rowNumber):
                 newrow.append(row[index])
-        newrow.append(row[len(row)-1])
+        # newrow.append(row[len(row)-1])
 
         # check total frequentcy in each row
         rowSumation = 0
         if rowCount > 0:
-            for index in xrange(2, len(newrow)- 2):
+            for index in xrange(2, len(newrow)- 1):
                 rowSumation += int(newrow[index])
 
         if rowSumation != 0 or rowCount == 0:
@@ -66,10 +66,15 @@ def main():
     if len(sys.argv) == 2:
         rootPath = sys.argv[1]
         onlyfiles = [f for f in listdir(rootPath) if isfile(join(rootPath, f))]
+        foo = 0
         for resultFile in onlyfiles:
             symptomsID, ext = resultFile.split(".")
             if ext == "csv":
                 reduceResult(rootPath+"/"+resultFile, symptomsID)
+
+            foo += 1
+            if foo == 2:
+                sys.exit(0)
     else:
         print "Please, Enter File Directory"
 
