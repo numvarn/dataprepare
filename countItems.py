@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from os import listdir
-from os import path
-from os import makedirs
 from os.path import isfile, join
 import sys
 import csv
@@ -33,7 +31,6 @@ def main():
         onlyfiles = [f for f in listdir(rootPath) if isfile(join(rootPath, f))]
 
         breakCount = 0
-
         for resultFile in onlyfiles:
             print "Processing : ", resultFile
             symptomsID, ext = resultFile.split(".")
