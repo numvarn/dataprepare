@@ -24,6 +24,7 @@ def readSymptoms():
 
 def main(rootDir, dirname, herblist, symptoms):
     filedir = rootDir+"/"+dirname+"/filtered"
+
     print "\nProcessing : ", filedir
 
     # create path to write output file
@@ -52,41 +53,52 @@ def main(rootDir, dirname, herblist, symptoms):
             header.append(head)
             index += 1
 
+        header.append('Found')
+
         newline = []
         newline = ",".join(header)+"\n"
         newline = newline.encode('utf-8')
         outfile.write(newline)
 
+    # Calculate row size
+    row_size = len(symptoms) + len(herblist) + 1
+
     # Count keyword in each file
     onlyfiles = [f for f in listdir(filedir) if isfile(join(filedir, f))]
     for filename in onlyfiles:
+        found_list = []
+        print "processing file : ", filename, " in ", dirname
         fname, fext = filename.split(".")
-        row = []
-        row.append("FID-"+fname)
+        row = [0] * row_size
+        row[0] = "FID-"+fname
 
-        # Count Symptoms
-        for symptom in symptoms:
-            symp_count = 0
-            src_file = open(filedir+"/"+filename, 'r')
-            for line in iter(src_file):
-                words = line.split("|")
-                for word in words:
-                    if word == symptom:
-                        symp_count += 1
-            row.append(str(symp_count))
+        # Open and Read file
+        src_file = open(filedir+"/"+filename, 'r')
+        for line in iter(src_file):
+            words = line.split("|")
+            for word in words:
+                founded = ''
+                if word in symptoms:
+                    row_index = symptoms.index(word) + 1
+                    founded = 'symp'+str(symptoms.index(word))
+                    row[row_index] += 1
+                elif word in herblist:
+                    row_index = herblist.index(word) + len(symptoms) + 1
+                    founded = 'h'+str(herblist.index(word))
+                    row[row_index] += 1
 
-        # Count Herb
-        for herb in herblist:
-            herb_count = 0
-            src_file = open(filedir+"/"+filename, 'r')
-            for line in iter(src_file):
-                words = line.split("|")
-                for word in words:
-                    if word == herb:
-                        herb_count += 1
-            row.append(str(symp_count))
+                if founded != '' and founded not in found_list:
+                    found_list.append(founded)
 
-        newline = ",".join(row)+"\n"
+        row.append(':'.join(found_list))
+
+        # Convert Items to string
+        row_str = []
+        for item in row:
+            row_str.append(str(item))
+
+        # Write row in CSV file
+        newline = ",".join(row_str)+"\n"
         newline = newline.encode('utf-8')
         outfile.write(newline)
 
@@ -99,9 +111,14 @@ if __name__ == '__main__':
         herblist = readHerbList()
         symptoms = readSymptoms()
 
+        dir_count = 0
         onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
         for dirname in onlyDir:
             if dirname != "001.vector" and dirname != "002.filtered-attbs" and dirname != "003.feq_matrix":
                 main(rootDir, dirname, herblist, symptoms)
+                dir_count += 1
+
+            if dir_count > 2:
+                break
     else:
         print "Please, Enter File Directory"
