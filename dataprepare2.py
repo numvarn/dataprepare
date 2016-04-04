@@ -111,14 +111,14 @@ if __name__ == '__main__':
         herblist = readHerbList()
         symptoms = readSymptoms()
 
-        dir_count = 0
+        # dir_count = 0
         onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
         for dirname in onlyDir:
             if dirname != "001.vector" and dirname != "002.filtered-attbs" and dirname != "003.feq_matrix":
                 main(rootDir, dirname, herblist, symptoms)
-                dir_count += 1
+                # dir_count += 1
 
-            if dir_count > 2:
-                break
+            # if dir_count > 2:
+            #     break
     else:
         print "Please, Enter File Directory"
