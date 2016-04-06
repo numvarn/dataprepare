@@ -69,8 +69,6 @@ def main():
                         wordHerb[h_index][3] += 1
                 column_count += 1
         row_count += 1
-        # if row_count > 4:
-        #     break
 
     # Write result to CSV
     rootPath = "/Users/phisanshukkhi/Desktop"
