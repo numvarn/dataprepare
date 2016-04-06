@@ -43,7 +43,7 @@ def main(rootDir, dirname, herblist, symptoms):
         header = ["filename"]
         index = 0
         for symp in symptoms:
-            head = 'symp'+str(index)
+            head = 's'+str(index)
             header.append(head)
             index += 1
 
@@ -80,7 +80,7 @@ def main(rootDir, dirname, herblist, symptoms):
                 founded = ''
                 if word in symptoms:
                     row_index = symptoms.index(word) + 1
-                    founded = 'symp'+str(symptoms.index(word))
+                    founded = 's'+str(symptoms.index(word))
                     row[row_index] += 1
                 elif word in herblist:
                     row_index = herblist.index(word) + len(symptoms) + 1
@@ -111,14 +111,9 @@ if __name__ == '__main__':
         herblist = readHerbList()
         symptoms = readSymptoms()
 
-        # dir_count = 0
         onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
         for dirname in onlyDir:
             if dirname != "001.vector" and dirname != "002.filtered-attbs" and dirname != "003.feq_matrix":
                 main(rootDir, dirname, herblist, symptoms)
-                # dir_count += 1
-
-            # if dir_count > 2:
-            #     break
     else:
         print "Please, Enter File Directory"
