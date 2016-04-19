@@ -10,14 +10,16 @@ import csv
 
 def readHerbList():
     herblist = []
-    rows = csv.reader(open("./herblist.csv", "rb"))
+    # rows = csv.reader(open("./herblist.csv", "rb"))
+    rows = csv.reader(open("./herblist-17-04-16.csv", "rb"))
     for row in rows:
         herblist.append(row[1].strip())
     return herblist
 
 def readSymptoms():
     symptoms = []
-    rows = csv.reader(open("./symptoms.csv", "rb"))
+    # rows = csv.reader(open("./symptoms.csv", "rb"))
+    rows = csv.reader(open("./symptoms-17-04-16.csv", "rb"))
     for row in rows:
         symptoms.append(row[1].strip())
     return symptoms
@@ -73,13 +75,14 @@ def main(rootDir, dirname, symid, herblist, symptoms):
     print "\nProcessing : ", filedir, " : ", symptom
 
     # create path to write output file
-    destination_dir = rootDir+"/001.vector"
+    # destination_dir = rootDir+"/001.vector"
+    destination_dir = rootDir+"/005.word-vector-symps"
 
     # Create directory for store result file
     if not path.exists(destination_dir):
         makedirs(destination_dir)
 
-    dest_path = destination_dir+"/"+str(symptomID)+".csv"
+    dest_path = destination_dir+"/"+str(symptomID)+"-"+symptom+".csv"
     if isfile(dest_path):
         outfile = open(dest_path, 'a')
     else:
@@ -123,7 +126,11 @@ if __name__ == '__main__':
         for symp in symptoms:
             onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
             for dirname in onlyDir:
-                if dirname != "001.vector":
+                if dirname != "001.vector-symps" and \
+                    dirname != "002.filtered-attbs" and \
+                    dirname != "003.wordsvector" and \
+                    dirname != "004.words_list" and \
+                    dirname != "005.word-vector-symps":
                     main(rootDir, dirname, symid, herblist, symptoms)
             symid += 1
     else:

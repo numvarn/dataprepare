@@ -70,6 +70,8 @@ def main():
                 column_count += 1
         row_count += 1
 
+        print "Processing row #",row_count
+
     # Write result to CSV
     rootPath = "/Users/phisanshukkhi/Desktop"
     destPath = rootPath+"/wordsSymp.csv"
