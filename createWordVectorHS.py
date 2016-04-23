@@ -10,37 +10,37 @@ import csv
 
 def readHerbList():
     herblist = []
-    rows = csv.reader(open("./herblist.csv", "rb"))
+    rows = csv.reader(open("./dictionary/herblist-21-04-16.csv", "rb"))
     for row in rows:
         herblist.append(row[1].strip())
     return herblist
 
 def readSymptoms():
     symptoms = []
-    rows = csv.reader(open("./symptoms.csv", "rb"))
+    rows = csv.reader(open("./dictionary/symptoms-21-04-16.csv", "rb"))
     for row in rows:
         symptoms.append(row[1].strip())
     return symptoms
 
 def main(rootDir, dirname, herblist, symptoms):
-    filedir = rootDir+"/"+dirname+"/filtered"
+    filedir = rootDir+"/"+dirname+"/filtered2"
 
     print "\nProcessing : ", filedir
 
     # create path to write output file
-    destination_dir = rootDir+"/003.feq_matrix"
+    destination_dir = rootDir+"/WordVectorHerbSymps"
 
     # Create directory for store result file
     if not path.exists(destination_dir):
         makedirs(destination_dir)
 
-    dest_path = destination_dir+"/matrix.csv"
+    dest_path = destination_dir+"/wordsVector.csv"
     if isfile(dest_path):
         outfile = open(dest_path, 'a')
     else:
         outfile = open(dest_path, 'w')
         # create CSV Header
-        header = ["filename"]
+        header = ["filename", "dirname"]
         index = 0
         for symp in symptoms:
             head = 's'+str(index)
@@ -61,7 +61,7 @@ def main(rootDir, dirname, herblist, symptoms):
         outfile.write(newline)
 
     # Calculate row size
-    row_size = len(symptoms) + len(herblist) + 1
+    row_size = len(symptoms) + len(herblist) + 2
 
     # Count keyword in each file
     onlyfiles = [f for f in listdir(filedir) if isfile(join(filedir, f))]
@@ -71,6 +71,7 @@ def main(rootDir, dirname, herblist, symptoms):
         fname, fext = filename.split(".")
         row = [0] * row_size
         row[0] = "FID-"+fname
+        row[1] = dirname
 
         # Open and Read file
         src_file = open(filedir+"/"+filename, 'r')
@@ -79,11 +80,11 @@ def main(rootDir, dirname, herblist, symptoms):
             for word in words:
                 founded = ''
                 if word in symptoms:
-                    row_index = symptoms.index(word) + 1
+                    row_index = symptoms.index(word) + 2
                     founded = 's'+str(symptoms.index(word))
                     row[row_index] += 1
                 elif word in herblist:
-                    row_index = herblist.index(word) + len(symptoms) + 1
+                    row_index = herblist.index(word) + len(symptoms) + 2
                     founded = 'h'+str(herblist.index(word))
                     row[row_index] += 1
 
@@ -113,7 +114,7 @@ if __name__ == '__main__':
 
         onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
         for dirname in onlyDir:
-            if dirname != "001.vector" and dirname != "002.filtered-attbs" and dirname != "003.feq_matrix":
+            if dirname != "WordVectorHerbSymps":
                 main(rootDir, dirname, herblist, symptoms)
     else:
         print "Please, Enter File Directory"
