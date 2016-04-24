@@ -32,7 +32,10 @@ def main():
 
     row_size = len(symptoms) + 3
     row_count = 1
-    rows = csv.reader(open("/Users/phisan/Desktop/006.WordVectorHerb/336-ถั่วเหลือง.csv"))
+
+    filename = "336-ถั่วเหลือง.csv"
+    rows = csv.reader(open("/Users/phisan/Desktop/006.WordVectorHerb/"+filename))
+
     totalDocument = 0
     for row in rows:
         if row_count > 1:
@@ -47,7 +50,7 @@ def main():
                 column_count += 1
         row_count += 1
 
-        print "Processing row #",row_count-1
+        # print "Processing row #",row_count-1
 
     feq_total_sym = 0
     row_count = 0
@@ -73,6 +76,41 @@ def main():
     with open(destPath, "wb") as f:
         writer = csv.writer(f)
         writer.writerows(wordsSymp)
+
+    # Calculate TF-IDF for each term
+    destPath = "/Users/phisan/Desktop/"+filename
+    outfile = open(destPath, 'w')
+
+    rows = csv.reader(open("/Users/phisan/Desktop/006.WordVectorHerb/"+filename))
+    row_count = 0
+    new_row = []
+    for row in rows:
+        column_index = 0
+        if row_count > 0:
+            for term_feq in row:
+                wordList_index = column_index - 2
+                if 2 < column_index < len(symptoms) + 3:
+                    term_idf = wordsSymp[wordList_index][6]
+                    weight = float(term_feq) * float(term_idf)
+                    new_row.append(str(weight))
+                else:
+                    new_row.append(term_feq)
+
+                newline = ",".join(new_row)+"\n"
+                newline = newline.encode('utf-8')
+                outfile.write(newline)
+
+                column_index += 1
+        else:
+            for header in row: new_row.append(header)
+            newline = ",".join(new_row)+"\n"
+            newline = newline.encode('utf-8')
+            outfile.write(newline)
+
+        row_count += 1
+
+    outfile.close()
+
 
 if __name__ == '__main__':
     main()
