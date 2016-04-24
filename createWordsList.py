@@ -61,7 +61,6 @@ def main():
             column_count = 0
             for item in row:
                 if column_count > 1 and column_count <= len(symptoms) + 1:
-                    pass
                     sindex = column_count - 2
                     wordsSymp[sindex+1][2] = int(wordsSymp[sindex+1][2]) + int(row[column_count])
                     if int(row[column_count]) != 0:
