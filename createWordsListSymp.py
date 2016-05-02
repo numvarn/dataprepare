@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+# Calculate TF-IDF Weight
+# Create word list with IDF weight
+
 import sys
 import csv
 import math
@@ -21,12 +25,12 @@ def main(directory, filename, resultPath):
 
     wordsSymp = [0] * (len(symptoms) + 1)
 
-    wordsSymp[0] = ["Symptoms", "Code", "Total Occurences", "Document Occurences", "Total Occurences(%)", "Document Occurences(%)", "IDF"]
+    wordsSymp[0] = ["Symptoms", "Code", "Total Occurences", "Document Occurences", "Total Occurences(%)", "Document Occurences(%)", "IDF", "IDF filtered"]
 
     index = 0
     for row in wordsSymp:
         if index > 0:
-            wordsSymp[index] = [0, 0, 0, 0, 0, 0, 0]
+            wordsSymp[index] = [0, 0, 0, 0, 0, 0, 0, 0]
         index += 1
 
     index = 1
@@ -63,6 +67,8 @@ def main(directory, filename, resultPath):
         row_count += 1
 
     row_count = 0
+    total_idf_weight = 0
+    member_notZero_count = 0
     for row in wordsSymp:
         if row_count > 0:
             if feq_total_sym != 0:
@@ -71,6 +77,26 @@ def main(directory, filename, resultPath):
                 wordsSymp[row_count][5] = (float(row[3]) / float(totalDocument)) * 100
             if wordsSymp[row_count][2] != 0:
                 wordsSymp[row_count][6] = math.log10(totalDocument / wordsSymp[row_count][3])
+                total_idf_weight += wordsSymp[row_count][6]
+                member_notZero_count += 1
+
+        row_count += 1
+
+    # Calculate mean of IDF weight
+    mean_idf = 0
+    if member_notZero_count != 0:
+        mean_idf = total_idf_weight / member_notZero_count
+        mean_idf = "{0:.2f}".format(mean_idf)
+
+    print "Mean IDF : ", mean_idf
+
+    row_count = 0
+    for row in wordsSymp:
+        if row_count > 0:
+            if float(wordsSymp[row_count][6]) >= float(mean_idf):
+                wordsSymp[row_count][7] = wordsSymp[row_count][6]
+            else:
+                wordsSymp[row_count][7] = 0
         row_count += 1
 
     # Write result to CSV
@@ -84,7 +110,7 @@ def main(directory, filename, resultPath):
         writer.writerows(wordsSymp)
 
     # Calculate TF-IDF for each term
-    destination_dir = resultPath+"/vectorTFIDF"
+    destination_dir = resultPath+"/vectorTFIDF-keywordsFiltered"
     if not path.exists(destination_dir):
         makedirs(destination_dir)
 
@@ -102,7 +128,10 @@ def main(directory, filename, resultPath):
                 wordList_index = column_index - 2
                 if 2 < column_index < len(symptoms) + 3:
                     if int(term_feq) != 0:
-                        term_idf = wordsSymp[wordList_index][6]
+                        # term_idf = wordsSymp[wordList_index][6]
+
+                        #-- Filtering keywords --#
+                        term_idf = wordsSymp[wordList_index][7]
                         weight = float(term_feq) * float(term_idf)
                         weight = "{0:.2f}".format(weight)
                         new_row.append(str(weight))
@@ -128,7 +157,7 @@ def main(directory, filename, resultPath):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         directory = sys.argv[1]
-        resultPath = '/Users/phisanshukkhi/Desktop'
+        resultPath = '/Users/phisan/Desktop'
 
         onlyfiles = [f for f in listdir(directory) if isfile(join(directory, f))]
         for filename in onlyfiles:

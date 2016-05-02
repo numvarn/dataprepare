@@ -1,5 +1,5 @@
 #!/bin/bash
-./createWordsListSymp.py '/Users/phisanshukkhi/Desktop/006.WordVectorHerb'
+./createWordsListSymp.py '/Users/phisan/Desktop/006.WordVectorHerb'
 # ./createWVHerb.py '/Volumes/Phisan Segate/ข้อมูลวิจัย/ระบบสนับสนุนการตัดสินใจ/Processed'
 # ./createWordVectorHS.py '/Volumes/Phisan Segate/ข้อมูลวิจัย/ระบบสนับสนุนการตัดสินใจ/Processed'
 # ./dataprepare.py '/Volumes/Phisan Segate/ข้อมูลวิจัย/ระบบสนับสนุนการตัดสินใจ/Processed'
