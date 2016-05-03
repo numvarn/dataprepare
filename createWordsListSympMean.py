@@ -3,7 +3,7 @@
 
 # Calculate TF-IDF Weight
 # Create word list with IDF weight
-# Using 0.00 // Two decical value to keywords filtering
+# Using mean value to keywords filtering
 
 import sys
 import csv
@@ -58,6 +58,8 @@ def main(directory, filename, resultPath):
                 column_count += 1
         row_count += 1
 
+        # print "Processing row #",row_count-1
+
     feq_total_sym = 0
     row_count = 0
     for row in wordsSymp:
@@ -66,6 +68,8 @@ def main(directory, filename, resultPath):
         row_count += 1
 
     row_count = 0
+    total_idf_weight = 0
+    member_notZero_count = 0
     for row in wordsSymp:
         if row_count > 0:
             if feq_total_sym != 0:
@@ -74,13 +78,26 @@ def main(directory, filename, resultPath):
                 wordsSymp[row_count][5] = (float(row[3]) / float(totalDocument)) * 100
             if wordsSymp[row_count][2] != 0:
                 wordsSymp[row_count][6] = math.log10(totalDocument / wordsSymp[row_count][3])
+                total_idf_weight += wordsSymp[row_count][6]
+                member_notZero_count += 1
 
         row_count += 1
+
+    # Calculate mean of IDF weight
+    mean_idf = 0
+    if member_notZero_count != 0:
+        mean_idf = total_idf_weight / member_notZero_count
+        mean_idf = "{0:.2f}".format(mean_idf)
+
+    print "Mean IDF : ", mean_idf
 
     row_count = 0
     for row in wordsSymp:
         if row_count > 0:
-            wordsSymp[row_count][7] = wordsSymp[row_count][6]
+            if float(wordsSymp[row_count][6]) >= float(mean_idf):
+                wordsSymp[row_count][7] = wordsSymp[row_count][6]
+            else:
+                wordsSymp[row_count][7] = 0
         row_count += 1
 
     # Write result to CSV
@@ -144,13 +161,9 @@ if __name__ == '__main__':
         resultPath = '/Users/phisan/Desktop'
 
         onlyfiles = [f for f in listdir(directory) if isfile(join(directory, f))]
-        file_count = 0
         for filename in onlyfiles:
             if filename != ".DS_Store":
                 main(directory, filename, resultPath)
-                file_count += 1
-            if file_count > 2:
-                break
     else:
         print "Please, Enter File Directory"
 
