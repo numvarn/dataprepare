@@ -23,7 +23,7 @@ def readSymptoms():
     return symptoms
 
 def main(rootDir, dirname, herblist, symptoms):
-    filedir = rootDir+"/"+dirname+"/filtered2"
+    filedir = rootDir+"/"+dirname+"/filtered3"
 
     print "\nProcessing : ", filedir
 
@@ -53,7 +53,8 @@ def main(rootDir, dirname, herblist, symptoms):
             header.append(head)
             index += 1
 
-        header.append('Found')
+        header.append('Found H')
+        header.append('Found S')
 
         newline = []
         newline = ",".join(header)+"\n"
@@ -66,7 +67,8 @@ def main(rootDir, dirname, herblist, symptoms):
     # Count keyword in each file
     onlyfiles = [f for f in listdir(filedir) if isfile(join(filedir, f))]
     for filename in onlyfiles:
-        found_list = []
+        found_s_list = []
+        found_h_list = []
         print "processing file : ", filename, " in ", dirname
         fname, fext = filename.split(".")
         row = [0] * row_size
@@ -78,30 +80,43 @@ def main(rootDir, dirname, herblist, symptoms):
         for line in iter(src_file):
             words = line.split("|")
             for word in words:
-                founded = ''
+                foundedH = ''
+                foundedS = ''
                 if word in symptoms:
                     row_index = symptoms.index(word) + 2
-                    founded = 's'+str(symptoms.index(word))
+                    foundedS = symptoms.index(word)
                     row[row_index] += 1
                 elif word in herblist:
                     row_index = herblist.index(word) + len(symptoms) + 2
-                    founded = 'h'+str(herblist.index(word))
+                    foundedH = herblist.index(word)
                     row[row_index] += 1
 
-                if founded != '' and founded not in found_list:
-                    found_list.append(founded)
+                if foundedS != '' and foundedS not in found_s_list:
+                    found_s_list.append(foundedS)
+                if foundedH != '' and foundedH not in found_h_list:
+                    found_h_list.append(foundedH)
 
-        row.append(':'.join(found_list))
+        if len(found_h_list) != 0:
+            found_h_list.sort()
+            found_s_list.sort()
 
-        # Convert Items to string
-        row_str = []
-        for item in row:
-            row_str.append(str(item))
+            for index in xrange(0,len(found_h_list)):
+                found_h_list[index] = str(found_h_list[index])
+            for index in xrange(0,len(found_s_list)):
+                found_s_list[index] = str(found_s_list[index])
 
-        # Write row in CSV file
-        newline = ",".join(row_str)+"\n"
-        newline = newline.encode('utf-8')
-        outfile.write(newline)
+            row.append(':'.join(found_h_list))
+            row.append(':'.join(found_s_list))
+
+            # Convert Items to string
+            row_str = []
+            for item in row:
+                row_str.append(str(item))
+
+            # Write row in CSV file
+            newline = ",".join(row_str)+"\n"
+            newline = newline.encode('utf-8')
+            outfile.write(newline)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -113,8 +128,12 @@ if __name__ == '__main__':
         symptoms = readSymptoms()
 
         onlyDir = [ name for name in listdir(rootDir) if path.isdir(path.join(rootDir, name)) ]
+        dir_count = 0
         for dirname in onlyDir:
             if dirname != "WordVectorHerbSymps":
                 main(rootDir, dirname, herblist, symptoms)
+                dir_count += 1
+                # if dir_count > 1:
+                #     break
     else:
         print "Please, Enter File Directory"

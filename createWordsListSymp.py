@@ -149,8 +149,8 @@ if __name__ == '__main__':
             if filename != ".DS_Store":
                 main(directory, filename, resultPath)
                 file_count += 1
-            if file_count > 2:
-                break
+            # if file_count > 2:
+            #     break
     else:
         print "Please, Enter File Directory"
 
