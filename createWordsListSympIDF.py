@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# up-date at 9-05-2016
+
 # Calculate TF-IDF Weight
 # Create word list with IDF weight
-# Using 0.00 // Two decical value to keywords filtering
+# Input is WordVector of each herb
 
 import sys
 import csv
@@ -21,6 +23,8 @@ def readSymptoms():
     return symptoms
 
 def main(directory, filename, resultPath):
+    # get herb ID from filename
+    hid, ext = filename.split('-')
     # Read CSV
     symptoms = readSymptoms()
 
@@ -94,7 +98,7 @@ def main(directory, filename, resultPath):
         writer.writerows(wordsSymp)
 
     # Calculate TF-IDF for each term
-    destination_dir = resultPath+"/vectorTFIDF-keywordsFiltered"
+    destination_dir = resultPath+"/vectorTFIDF"
     if not path.exists(destination_dir):
         makedirs(destination_dir)
 
@@ -112,10 +116,7 @@ def main(directory, filename, resultPath):
                 wordList_index = column_index - 2
                 if 2 < column_index < len(symptoms) + 3:
                     if int(term_feq) != 0:
-                        # term_idf = wordsSymp[wordList_index][6]
-
-                        #-- Filtering keywords --#
-                        term_idf = wordsSymp[wordList_index][7]
+                        term_idf = wordsSymp[wordList_index][6]
                         weight = float(term_feq) * float(term_idf)
                         weight = "{0:.2f}".format(weight)
                         new_row.append(str(weight))
@@ -125,11 +126,13 @@ def main(directory, filename, resultPath):
                     new_row.append(term_feq)
                 column_index += 1
 
+            new_row.insert(3, '1')
             newline = ",".join(new_row)+"\n"
             newline = newline.encode('utf-8')
             outfile.write(newline)
         else:
             for header in row: new_row.append(header)
+            new_row.insert(3, "Herb-"+str(hid))
             newline = ",".join(new_row)+"\n"
             newline = newline.encode('utf-8')
             outfile.write(newline)

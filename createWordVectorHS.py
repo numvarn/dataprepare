@@ -34,7 +34,7 @@ def main(rootDir, dirname, herblist, symptoms):
     if not path.exists(destination_dir):
         makedirs(destination_dir)
 
-    dest_path = destination_dir+"/wordsVector.csv"
+    dest_path = destination_dir+"/wordsVectorHS.csv"
     if isfile(dest_path):
         outfile = open(dest_path, 'a')
     else:
