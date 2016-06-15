@@ -5,6 +5,9 @@ import math
 
 # Create WordList and Words Vector of Herb and Symptoms
 # And calculate Symptom term feq. to tf-idf weight
+# Currently, source file store in ...
+#/Volumes/Phisan Segate/ข้อมูลวิจัย/ระบบสนับสนุนการตัดสินใจ/008.WordVectorHerbSymps (not-use)
+
 
 def readHerbList():
     herblist = []
@@ -57,7 +60,7 @@ def main():
 
     row_size = len(symptoms) + len(herblist) + 2
     row_count = 1
-    rows = csv.reader(open("/Users/phisan/Desktop/007.WordVectorHerbSymps/03-wordsVectorHS-TF.csv"))
+    rows = csv.reader(open("/Users/phisanshukkhi/Desktop/03-wordsVectorHS-TF.csv"))
     totalDocument = 0
     for row in rows:
         if row_count > 1:
@@ -113,16 +116,15 @@ def main():
         row_count += 1
 
     # Create new words vector and Write result to CSV
-    rootPath = "/Users/phisan/Desktop"
+    rootPath = "/Users/phisanshukkhi/Desktop"
     destFile = rootPath+"/wordsVectorHS-TFIDF-Symp.csv"
     outfile = open(destFile, 'w')
-    wordVectorIDF = csv.reader(open("/Users/phisan/Desktop/007.WordVectorHerbSymps/03-wordsVectorHS-TF.csv"))
+    wordVectorIDF = csv.reader(open("/Users/phisanshukkhi/Desktop/03-wordsVectorHS-TF.csv"))
 
     print "Calculate TF-IDF term weight "
     row_count = 0
     for row in wordVectorIDF:
         new_row = []
-        column_index = 0
         if row_count > 0:
             column_count = 0
             for item in row:
@@ -147,7 +149,7 @@ def main():
 
 
     # Write Word List result to CSV
-    rootPath = "/Users/phisan/Desktop"
+    rootPath = "/Users/phisanshukkhi/Desktop"
     destPath = rootPath+"/wordsSymp.csv"
     with open(destPath, "wb") as f:
         writer = csv.writer(f)
